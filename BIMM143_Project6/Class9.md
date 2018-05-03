@@ -9,7 +9,7 @@ output:
 
 
 
-## Cancer Cell Work
+## Cancer Cell Work and Plots
 
 Importing data and rearranging the B and M conditions to Boolean 
 
@@ -273,31 +273,7 @@ axis(2, at=pve, labels = round(pve,2)*100)
 
 plot(pve, xlab = "Principal Component", ylab = "Cumulative Proportion of Variance Explained", ylim = c(0,1), type = "o")
 
-plot(cumsum(pve), xlab = "Principal Component", yab = "Cumulative Proportion of Variance Explained", ylim = c(0,1), type = "o")
-```
-
-```
-## Warning in plot.window(...): "yab" is not a graphical parameter
-```
-
-```
-## Warning in plot.xy(xy, type, ...): "yab" is not a graphical parameter
-```
-
-```
-## Warning in axis(side = side, at = at, labels = labels, ...): "yab" is not a
-## graphical parameter
-
-## Warning in axis(side = side, at = at, labels = labels, ...): "yab" is not a
-## graphical parameter
-```
-
-```
-## Warning in box(...): "yab" is not a graphical parameter
-```
-
-```
-## Warning in title(...): "yab" is not a graphical parameter
+plot(cumsum(pve), xlab = "Principal Component", ylab = "Cumulative Proportion of Variance Explained", ylim = c(0,1), type = "o")
 ```
 
 ![](Class9_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
