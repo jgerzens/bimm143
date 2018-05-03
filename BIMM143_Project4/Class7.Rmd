@@ -1,0 +1,226 @@
+---
+title: "Bioinformatics Class 7"
+author: "Jacob Gerzenshtein"
+date: "April 24, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Functions Again
+
+Here we are going to revisit our function from class 6
+
+```{r}
+source("http://tinyurl.com/rescale-R")
+```
+
+Let's see if we can use this function
+
+
+```{r}
+rescale(1:10)
+```
+
+
+Looks good - let's break it 
+
+```{r}
+#rescale(c(1:10, "string"))
+```
+
+Let's try the new **rescale2** function
+
+```{r}
+#rescale2(c(1:10, "string"))
+```
+
+## Writing a NA checking function
+
+Here we write a new function to check for NA's in two inputs
+
+```{r}
+x <- c(1, 2, NA, 3, NA)
+y <- c(NA, 3, NA, 3, 4)
+```
+
+```{r}
+which(is.na(x))
+which(is.na(y))
+```
+
+```{r}
+sum (is.na(x))
+
+```
+
+```{r}
+is.na(x)
+is.na(y)
+```
+
+
+```{r}
+is.na(x) & is.na(y)
+```
+
+
+
+Let's out this together with x and y 
+
+```{r}
+sum(is.na(x) & is.na(y))
+```
+
+## The function:
+```{r}
+both_na <- function(x, y) {
+
+
+
+sum(is.na(x) & is.na(y))
+
+}
+```
+
+Test it
+
+```{r}
+both_na(x,y)
+```
+
+
+Breaking it: 
+
+```{r}
+x <- c(NA, NA, NA)
+y1 <- c(1, NA, NA)
+y2 <- c(1, NA, NA, NA)
+
+both_na(x,y)
+```
+
+New function to create warning:
+
+```{r}
+both_na2 <- function (x,y) {
+  
+  
+  if (length(x) != length(y)) {
+    
+    stop("Input x and y should be the same length")
+    
+  }
+  
+  sum(is.na(x) & is.na(y))
+  
+}
+```
+
+Test it again in console 
+
+
+A new function to find number of matches and where they are:
+
+```{r}
+both_na3 <- function(x,y) {
+  
+  if (length(x) != length(y)) { 
+    
+    stop("Input x and y should be vectors of the same length")
+    
+    }
+  
+  na.in.both <- (is.na(x) & is.na(y))
+  na.number <- sum(na.in.both)
+  na.which <- which(na.in.both)
+  
+  message("Found", na.number, "NA's at position(s):", paste(na.which, collapse = ", "))
+  
+  
+  return(list(number=na.number, which=na.which))
+  
+  
+}
+```
+
+Try it: 
+
+```{r}
+x <- c(1, 2, NA, 3, NA)
+y <- c(NA, 3, NA, 3, 4)
+both_na3(x,y)
+```
+
+
+
+
+
+## Follow along: a different function for gene intersection 
+
+
+Sourcing the code 
+```{r}
+source("http://tinyurl.com/rescale-R")
+```
+
+```{r}
+df1
+df2
+
+x <- df1$IDs
+y <- df2$IDs
+
+
+```
+
+```{r}
+x
+y
+```
+
+
+Seeing where there are similarities 
+```{r}
+intersect (x,y)
+x%in%y
+y%in%x
+```
+
+Now access the genes with desired indices 
+
+```{r}
+x[x%in%y]
+y[y%in%x]
+```
+
+
+Now put them together with **cbind()**
+
+```{r}
+cbind(x[x%in%y], y[y%in%x])
+```
+
+
+```{r}
+gene_intersect <- function (df1, df2) {
+
+cbind(df1[df1$IDs %in% df2$IDs, ],
+      df2[df2$IDs %in% df1$IDs, "exp"])
+
+}
+```
+
+```{r}
+gene_intersect2(df1, df2)
+```
+
+
+
+```{r}
+merge(df1, df2, by = "IDs")
+```
+
