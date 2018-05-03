@@ -2,7 +2,9 @@
 title: "BIMM143 Class8"
 author: "Jacob Gerzenshtein"
 date: "April 26, 2018"
-output: html_document
+output:
+  html_document:
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -107,7 +109,7 @@ print(km2$centers)
 Different clusters: 
 
 ```{r}
-hc.complete <- hclust(x, method = "complete")
+#hc.complete <- hclust(x, method = "complete")
 
 ```
 
