@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Cancer Cell Work and Plots!
+## Cancer Cell Work and Plots
 
 Importing data and rearranging the B and M conditions to Boolean 
 
