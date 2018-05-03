@@ -77,6 +77,21 @@ colMeans(wisc.data)
 apply(wisc.data, 2, sd)
 ```
 
+# Plotting mean and Standard Deviation 
+
+```{r}
+mean2 <- colMeans(wisc.data)
+
+sd2 <- apply(wisc.data, 2, sd)
+
+par(mfrow = c(1,2))
+
+plot(mean2, type = "h")
+
+plot(sd2, type = "h")
+```
+
+
 # Using PCA now 
 
 ```{r}
