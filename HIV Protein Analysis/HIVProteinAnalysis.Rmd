@@ -27,5 +27,19 @@ df <- trim$atom$b
 df
 ```
 
+Statistics
 
+
+```{r}
+pdb.stats <- read.csv("Data Export Summary.csv")
+```
+
+
+```{r}
+percent <- (pdb.stats$Total / sum(pdb.stats$Total)) * 100
+
+names(percent) <- pdb.stats$Experimental.Method
+
+percent 
+```
 
