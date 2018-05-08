@@ -1,0 +1,31 @@
+---
+title: "HIV Protein Analysis"
+author: "Jacob Gerzenshtein"
+date: "May 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## HIV Protein Analysis 
+
+```{r}
+#installing the package
+
+#reading library
+
+library(bio3d)
+
+read <- read.pdb("1hsg.pdb")
+
+trim <- trim(read, chain = "A", elety = "CA")
+
+df <- trim$atom$b
+
+df
+```
+
+
+
