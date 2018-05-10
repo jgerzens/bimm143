@@ -65,3 +65,15 @@ rmsd(ori, res)
 
 ```
 
+```{r}
+res2 <- read.pdb("all.pdbqt")
+
+ori2 <- read.pdb("1HSG_ligand.pdbqt")
+
+res3 <- atom.select(res2, "noh", inverse = TRUE, verbose = TRUE)
+
+ori3 <- atom.select(ori2, "noh", inverse = TRUE, verbose = TRUE)
+
+rmsd(ori3, res3)
+```
+

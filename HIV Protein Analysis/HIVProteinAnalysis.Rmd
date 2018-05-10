@@ -101,18 +101,20 @@ hits$pdb.id
 ```
 
 
-```{r}
-par(mai = c(1,1,1,1))
-```
-
-
-
 Aligning things
 ```{r}
+
+par("mar")
+
+par(mar = c(1,1,1,1))
+
+
 pdbs <- pdbaln(files)
 
 ids <- basename.pdb(pdbs$id)
 
+
+#Adjust the window size to get the plot without error 
 plot(pdbs, labels = ids)
 ```
 
