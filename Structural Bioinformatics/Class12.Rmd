@@ -41,3 +41,27 @@ write.pdb(prot, file = "1HSG_protein.pdb")
 write.pdb(lig, file = "1HSG_ligand.pdb")
 ```
 
+
+
+Running ligand and protein
+
+```{r}
+library(bio3d)
+
+res <- read.pdb("all.pdbqt", multi = TRUE)
+
+write.pdb(res, "results.pdb")
+```
+
+Looking at the Root Mean Square Distance of each docking result to find the best one
+
+```{r}
+res <- read.pdb("all.pdbqt", multi = TRUE)
+
+ori <- read.pdb("1HSG_ligand.pdbqt")
+
+rmsd(ori, res)
+
+
+```
+

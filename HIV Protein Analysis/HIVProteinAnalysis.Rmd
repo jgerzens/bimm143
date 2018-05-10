@@ -102,7 +102,7 @@ hits$pdb.id
 
 
 ```{r}
-par(mar = c(1,1,1,1))
+par(mai = c(1,1,1,1))
 ```
 
 
