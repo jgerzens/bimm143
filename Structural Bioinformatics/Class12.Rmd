@@ -1,0 +1,43 @@
+---
+title: "BIMM143 Structural Bioinformatics"
+author: "Jacob Gerzenshtein"
+date: "May 10, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Doing Structural Bioinformatics
+
+Loading Bio3D
+
+```{r}
+library(bio3d)
+
+file.name <- get.pdb ("1HSG")
+```
+
+Reading the PDB, initializing to hiv
+
+```{r}
+hiv <- read.pdb(file.name)
+
+```
+
+
+```{r}
+summary(hiv)
+```
+
+Trimming the file 
+
+```{r}
+prot <- trim.pdb(hiv, "protein")
+lig <- trim.pdb(hiv, "ligand")
+
+write.pdb(prot, file = "1HSG_protein.pdb")
+write.pdb(lig, file = "1HSG_ligand.pdb")
+```
+

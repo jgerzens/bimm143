@@ -43,3 +43,76 @@ names(percent) <- pdb.stats$Experimental.Method
 percent 
 ```
 
+Working with Bio3D
+
+```{r}
+library(bio3d)
+
+pdb2 <- read.pdb("1HSG")
+
+pdb2
+```
+
+Write a C alpha atom only VMD file
+
+```{r}
+pdb <- read.pdb("1HSG")
+inds <- atom.select(pdb, "calpha")
+inds
+```
+
+```{r}
+inds$atom
+
+head(pdb$atom[inds$atom, ])
+
+ca.pdb <- trim.pdb(pdb, inds = inds)
+ca.pdb
+
+write.pdb(ca.pdb, file = "calpha_only.pdb")
+
+```
+
+
+Working with multiple PDB files
+
+```{r}
+
+ids <- c("1TND_B", "1AGR_A", "1TAG_A", "1GG2_A", "1KJY_A", "4G5Q_A")
+
+files <- get.pdb(ids, split = TRUE)
+
+pdbs <- pdbaln (files, fit = TRUE)
+
+```
+
+```{r}
+aa <- get.seq("1ake_A")
+aa
+```
+
+```{r}
+b <- blast.pdb(aa)
+
+hits <- plot (b)
+
+hits$pdb.id
+
+```
+
+
+```{r}
+par(mar = c(1,1,1,1))
+```
+
+
+
+Aligning things
+```{r}
+pdbs <- pdbaln(files)
+
+ids <- basename.pdb(pdbs$id)
+
+plot(pdbs, labels = ids)
+```
+
