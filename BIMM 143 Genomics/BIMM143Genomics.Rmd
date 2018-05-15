@@ -1,0 +1,28 @@
+---
+title: "BIMM 143 Genomics"
+author: "Jacob Gerzenshtein"
+date: "May 15, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Genomics Work
+
+Question 1: 4 Candidate SNPS from OMIM: 
+  rs12936231 
+  rs8067378 
+  rs9303277
+  rs7216389
+
+Question 2: 
+  ORMDL3
+  ZPBP2
+  IKZF3
+  GSDMB 
+  
+Question 3: Location is Chromosome 17:39895095 (forward strand)|VCF:17
+
+Question 4: GSDMB, LRRC3C, GSDMA
