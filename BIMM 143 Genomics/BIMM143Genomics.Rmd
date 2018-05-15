@@ -56,6 +56,9 @@ Question 6: For same HG00109, the phenotype is G|G
 ```
 
 ```{r}
+library(seqinr)
+library(gtools)
+
 phred <- asc(s2c("DDDDCDEDCDDDDBBDDDCC@")) - 33
 
 phred
