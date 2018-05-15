@@ -49,10 +49,10 @@ Question 6: For same HG00109, the phenotype is G|G
 
 
 ```{r}
-install.packages("seqinr")
-install.packages("gtools")
-library(seqinr)
-library(gtools)
+#install.packages("seqinr")
+#install.packages("gtools")
+#library(seqinr)
+#library(gtools)
 ```
 
 ```{r}
@@ -103,6 +103,17 @@ summary(genedata$geno[(genedata$geno == "G/G")])
 Boxplot
 
 ```{r}
-boxplot(exp ~ geno, data = genedata)
+boxplot(exp ~ geno, data = genedata, notch = TRUE, outline = TRUE)
+```
+
+A nicer ggplot version
+
+```{r}
+library(ggplot2)
+ggplot(genedata, aes(geno, exp)) + geom_boxplot()
+```
+
+```{r}
+ggplot(genedata, aes(exp, fill = geno)) + geom_density(alpha = 0.6)
 ```
 
