@@ -26,3 +26,83 @@ Question 2:
 Question 3: Location is Chromosome 17:39895095 (forward strand)|VCF:17
 
 Question 4: GSDMB, LRRC3C, GSDMA
+
+```{r}
+geno <- read.csv("Genotypes.csv", header = TRUE)
+
+num <- grep("G|G", geno$Genotype..forward.strand.)
+
+print(num)
+
+genosummary <- table(geno$Genotype..forward.strand.)
+
+proportion <- genosummary / nrow(geno) * 100
+
+proportion
+
+```
+
+
+Question 5: 9 out of the 64 people studied so 14%
+
+Question 6: For same HG00109, the phenotype is G|G
+
+
+```{r}
+install.packages("seqinr")
+install.packages("gtools")
+library(seqinr)
+library(gtools)
+```
+
+```{r}
+phred <- asc(s2c("DDDDCDEDCDDDDBBDDDCC@")) - 33
+
+phred
+
+prob <- 10**(-phred/10)
+
+prob
+```
+
+
+Section 4
+
+Extracting data and plotting
+```{r}
+genedata <- read.table("Genotyping.txt", header = TRUE)
+
+boxplot(genedata)
+
+summary(genedata)
+```
+
+
+Number of samples
+```{r}
+nrow(genedata)
+```
+
+
+Sample size for each genotype 
+```{r}
+genedata2 <- table(genedata$geno)
+
+genedata2
+```
+
+Different genotype levels
+
+```{r}
+summary(genedata$geno[(genedata$geno == "A/A")])
+summary(genedata$geno[(genedata$geno == "A/G")])
+summary(genedata$geno[(genedata$geno == "G/G")])
+```
+
+
+Boxplot
+
+```{r}
+boxplot(exp ~ geno, data = genedata)
+```
+
