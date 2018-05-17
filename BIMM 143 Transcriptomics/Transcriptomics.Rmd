@@ -119,22 +119,52 @@ View(anno)
 Merging the annotation with the mycounts data
 
 ```{r}
-mergedata <- merge(mycounts, anno, by.x = "row.names", by.y = "ensgene")
-View(mergedata)
+results <- merge(mycounts, anno, by.x = "row.names", by.y = "ensgene")
+View(results)
+```
+
+
+Loading annotation packages
+
+```{r}
+#biocLite("org.Hs.eg.db")
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+
+
+Adding individual columns to results 
+
+```{r}
+mycounts$symbol <- mapIds(org.Hs.eg.db, keys = row.names(mycounts),
+                          column = "SYMBOL",
+                          keytype = "ENSEMBL",
+                          multiVals = "first")
+```
+```{r}
+mycounts$entrez <- mapIds(org.Hs.eg.db, keys = row.names(mycounts),
+                          column = "ENTREZID",
+                          keytype = "ENSEMBL",
+                          multiVals = "first")
+
+mycounts$uniprot <- mapIds(org.Hs.eg.db, keys = row.names(mycounts),
+                          column = "UNIPROT",
+                          keytype = "ENSEMBL",
+                          multiVals = "first")
 ```
 
 
 
+```{r}
+head(mycounts)
+```
 
 
+Examining results
 
-
-
-
-
-
-
-
+```{r}
+head(mycounts[up.ind, ])
+```
 
 
 
