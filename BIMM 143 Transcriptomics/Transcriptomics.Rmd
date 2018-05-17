@@ -11,3 +11,81 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Working on Transcriptomics 
 
+Importing the data
+
+```{r}
+metadata <- read.csv("airway_metadata.csv", stringsAsFactors = FALSE)
+counts <- read.csv("airway_scaledcounts.csv", stringsAsFactors = FALSE)
+
+head(counts)
+
+head(metadata)
+```
+
+Viewing data
+
+```{r}
+View(metadata)
+```
+
+Finding data points that are control, then calculating mean counts per gene
+
+```{r}
+control <- metadata[metadata[ ,"dex"] == "control",]
+control.mean <- rowSums(counts[ ,control$id]) / nrow(control) 
+names(control.mean) <- counts$ensgene
+```
+
+
+To make the code above more robust, divide by generic number of controls
+
+```{r}
+treated <- metadata[metadata[ ,"dex"] == "treated",]
+treated.mean <- rowSums(counts[ ,treated$id]) / nrow(treated)
+names(treated.mean) <- counts$ensgene
+```
+
+
+Combining the two 
+
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+
+meancounts
+```
+
+Finding the column data
+
+```{r}
+colSums(meancounts)
+```
+
+
+Creating a scatter plot
+
+```{r}
+plot(meancounts, log = "xy")
+```
+
+Using log2 to look at differentially expressed genes
+
+```{r}
+meancounts$log2fc <- log2(meancounts[ ,"treated.mean"] / meancounts[ ,"control.mean"])
+head(meancounts)
+```
+
+Filtering out data to get rid of NaN and -inf 
+
+```{r}
+zero.vals <- which(meancounts[ ,1:2] == 0, arr.ind = TRUE)
+
+to.rm <- unique(zero.vals[ ,1])
+
+mycounts <- meancounts[-to.rm, ]
+
+head(mycounts)
+```
+
+The purpose of the arr.ind argument: creates an array index when x is an array 
+
+Need to use unique to get rid of duplicate elements/rows
