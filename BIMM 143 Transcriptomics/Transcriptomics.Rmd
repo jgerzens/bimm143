@@ -1,0 +1,13 @@
+---
+title: "Transcriptomics"
+author: "Jacob Gerzenshtein"
+date: "May 17, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Working on Transcriptomics 
+
