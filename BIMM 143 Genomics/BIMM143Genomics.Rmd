@@ -32,7 +32,7 @@ Question 4: GSDMB, LRRC3C, GSDMA
 ```{r}
 geno <- read.csv("Genotypes.csv", header = TRUE)
 
-num <- grep("G|G", geno$Genotype..forward.strand.)
+num <- grep("G|G", geno$Genotype..forward.strand., perl = FALSE)
 
 print(num)
 
