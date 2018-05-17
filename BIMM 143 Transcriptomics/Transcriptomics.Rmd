@@ -166,6 +166,37 @@ Examining results
 head(mycounts[up.ind, ])
 ```
 
+## Doing things the right way with DESeq2 package
 
+Loading the packages
+```{r}
+library(DESeq2)
 
+citation("DESeq2")
+```
+
+Setting things up
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = metadata,
+                              design = ~dex,
+                              tidy = TRUE)
+
+dds
+```
+
+```{r}
+dds <- DESeq(dds)
+```
  
+Looking at results
+
+Shows head and tail of data, along with pvalue and padjust 
+
+```{r}
+res <- results(dds)
+
+res
+```
+
