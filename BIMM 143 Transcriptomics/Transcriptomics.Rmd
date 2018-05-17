@@ -192,11 +192,96 @@ dds <- DESeq(dds)
  
 Looking at results
 
-Shows head and tail of data, along with pvalue and padjust 
+Shows head and tail of data, along with pvalue and padjust (adjusts and normalizes for multiple tests) 
 
 ```{r}
 res <- results(dds)
 
 res
+```
+
+```{r}
+summary(res)
+```
+
+Ordering results by pvalue
+
+```{r}
+resOrdered <- res[order(res$pvalue), ]
+
+res05 <- results(dds, alpha = 0.05)
+summary(res05)
+```
+
+
+```{r}
+resSig05 <- subset(as.data.frame(res), padj < 0.05)
+nrow(resSig05)
+```
+
+How many significant with adjust pvalue < 0.05 --> 2182
+
+How many significant with adjust pvalue < 0.01 --> 1437
+
+```{r}
+resSig01 <- subset(as.data.frame(res), padj < 0.01)
+nrow(resSig01)
+```
+
+
+Adding padj column to resSig01
+
+```{r}
+resSig01$symbol <- mapIds(org.Hs.eg.db, keys = row.names(resSig01),
+                          column = "SYMBOL",
+                          keytype = "ENSEMBL",
+                          multiVals = "first")
+```
+
+```{r}
+ord <- order(resSig01$padj)
+head(resSig01[ord, ])
+```
+
+
+Making a CSV
+
+```{r}
+write.csv(resSig01[ord, ], "signif01_results.csv")
+```
+
+Plotting data
+
+```{r}
+i <- grep("CRISPLD2", resSig01$symbol)
+resSig01[i, ]
+```
+```{r}
+rownames(resSig01[i, ])
+```
+
+```{r}
+plotCounts(dds, gene = "ENSG00000103196", intgroup = "dex")
+```
+
+
+Making it look better
+
+```{r}
+d <- plotCounts(dds, gene = "ENSG00000103196", intgroup = "dex", returnData = TRUE)
+head(d)
+```
+ 
+
+```{r}
+boxplot(count ~ dex, data = d)
+```
+
+Add some ggplot to the mix
+
+```{r}
+library(ggplot2)
+
+ggplot(d, aes(dex, count)) + geom_boxplot(aes(fill=dex)) + scale_y_log10() + ggtitle("CRISPLD2")
 ```
 
