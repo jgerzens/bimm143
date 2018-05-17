@@ -84,8 +84,58 @@ to.rm <- unique(zero.vals[ ,1])
 mycounts <- meancounts[-to.rm, ]
 
 head(mycounts)
+
+View(mycounts)
 ```
 
-The purpose of the arr.ind argument: creates an array index when x is an array 
+The purpose of the arr.ind argument: creates an array index when x is an array, will not return the value it will return the location of the desired data instead
 
 Need to use unique to get rid of duplicate elements/rows
+
+
+Finding number of genes that are up or down regulated 
+
+```{r}
+up.ind <- mycounts$log2fc > 2
+
+down.ind <- mycounts$log2fc < (-2)
+
+paste("The amount of up is:", sum(up.ind))
+
+paste("The amount of down is:", sum(down.ind))
+```
+
+
+Introducing annotation to the data 
+
+```{r}
+anno <- read.csv("annotables_grch38.csv")
+
+head(anno)
+View(anno)
+```
+
+
+Merging the annotation with the mycounts data
+
+```{r}
+mergedata <- merge(mycounts, anno, by.x = "row.names", by.y = "ensgene")
+View(mergedata)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
