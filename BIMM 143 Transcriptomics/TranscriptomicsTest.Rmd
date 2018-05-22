@@ -1,0 +1,18 @@
+---
+title: "Transcriptomics Test"
+author: "Jacob Gerzenshtein"
+date: "May 17, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Transcriptomics Test
+
+```{r}
+testcsv <- read.csv("Test.csv")
+View(testcsv)
+```
+
