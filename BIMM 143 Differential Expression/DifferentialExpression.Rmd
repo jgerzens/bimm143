@@ -1,0 +1,212 @@
+---
+title: "BIMM 143 Differential Expression"
+author: "Jacob Gerzenshtein"
+date: "May 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Differential Expression Analysis 
+
+Loading the necessary packages
+
+```{r}
+library(DESeq2)
+```
+
+Loading data files
+
+
+```{r}
+metaFile <- "GSE37704_metadata.csv"
+
+countFile <- "GSE37704_featurecounts.csv"
+```
+
+Reading some of the data
+
+```{r}
+colData <- read.csv(metaFile, row.names = 1)
+head(colData)
+```
+
+Importing count data
+
+```{r}
+countData <- read.csv(countFile, row.names = 1)
+head(countData)
+```
+
+Need all the columns to match up so need to remove the first column of countData
+
+```{r}
+countData <- as.matrix(countData[ ,-1])
+head(countData)
+```
+
+Getting rid of the entries that are just zeroes 
+
+```{r}
+countData <- countData[rowSums(countData) > 1, ]
+head(countData)
+```
+
+
+Setting up DESeq2 pipeline and analysis 
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = ~condition)
+
+dds <- DESeq(dds)
+```
+
+
+Seeing what the output is
+
+```{r}
+dds
+```
+
+Running analysis of the HoxA1 knockdown versus control siRNA
+
+```{r}
+res = results(dds, contrast = c("condition", "hoxa1_kd", "control_sirna"))
+
+# reordering by p-value
+
+res = res[order(res$pvalue), ]
+
+summary(res)
+```
+ 
+Introducing ENTREZ as a source of data to annotate the existing output
+
+```{r}
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+
+columns(org.Hs.eg.db)
+```
+
+
+Using the mapID function
+
+```{r}
+res$symbol <- mapIds(org.Hs.eg.db,
+                     keys = row.names(res),
+                     column = "SYMBOL",
+                     keytype = "ENSEMBL",
+                     multiVals = "first")
+
+res$entrez <- mapIds(org.Hs.eg.db,
+                     keys = row.names(res),
+                     column = "ENTREZID",
+                     keytype = "ENSEMBL",
+                     multiVals = "first")
+
+res$name = mapIds(org.Hs.eg.db,
+                  keys = row.names(res),
+                  column = "GENENAME",
+                  keytype = "ENSEMBL",
+                  multiVals = "first")
+
+head(res, 10)
+```
+
+
+## Using KEGG tools, and the gageData package
+
+Installing necessary packages
+
+```{r}
+source("http://bioconductor.org/biocLite.R")
+
+biocLite( c("pathview", "gage", "gageData"))
+```
+
+Loading necessary and relevant packages
+
+```{r}
+library(pathview)
+
+library(gage)
+
+library(gageData)
+```
+
+Reading Data
+
+```{r}
+data("kegg.sets.hs")
+data("sigmet.idx.hs")
+
+kegg.sets.hs = kegg.sets.hs[sigmet.idx.hs]
+
+head(kegg.sets.hs, 3)
+```
+
+Further data manipulation
+
+```{r}
+foldchanges = res$log2FoldChange
+
+names(foldchanges) = res$entrez
+
+head(foldchanges)
+```
+
+
+
+Using GAGE
+
+```{r}
+keggres = gage(foldchanges, gsets=kegg.sets.hs, same.dir = TRUE)
+```
+
+Examining the GAGE data
+
+
+```{r}
+attributes(keggres)
+```
+
+```{r}
+head(keggres$greater)
+```
+ 
+```{r}
+head(keggres$less)
+```
+ 
+Applying labels to the data 
+
+```{r}
+lapply(keggres, head)
+```
+
+Examining the top 5 of the upregulated pathways, then just getting the IDs
+
+```{r}
+pathways <- data.frame(id = row.names(keggres$greater), keggres$greater)
+
+head(pathways)
+```
+
+Using the pathway package to use the pathview function in order to make a pathway plot 
+
+```{r}
+pathview(gene.data = foldchanges, pathway.id = "hsa04110")
+
+
+```
+
+
+Manipulating the above graph
+
+```{r}
+pathview(gene.data = foldchanges, pathway.id = "hsa04110", kegg.native = FALSE)
+```
+
