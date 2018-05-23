@@ -1,0 +1,43 @@
+---
+title: "BIMM 143 Protein Project"
+author: "Jacob Gerzenshtein"
+date: "May 23, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Protein Project
+
+Generating a Heatmap using MUSCLE alignments
+
+
+
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+aln <- read.fasta("aln-fasta.txt")
+
+aln
+```
+
+
+```{r}
+par(mai = c(8,8,8,8))
+```
+
+
+
+```{r}
+aln2 <- seqidentity(aln)
+
+aln2
+
+heatmap(aln2, margins = c(10,5))
+```
+
