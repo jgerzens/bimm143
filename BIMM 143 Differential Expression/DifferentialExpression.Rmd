@@ -2,7 +2,9 @@
 title: "BIMM 143 Differential Expression"
 author: "Jacob Gerzenshtein"
 date: "May 22, 2018"
-output: html_document
+output: 
+  html_document:
+    keep_md: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -57,7 +59,7 @@ head(countData)
 
 Setting up DESeq2 pipeline and analysis 
 
-```{r}
+```{r, cache=TRUE}
 dds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = ~condition)
 
 dds <- DESeq(dds)
@@ -122,9 +124,9 @@ head(res, 10)
 Installing necessary packages
 
 ```{r}
-source("http://bioconductor.org/biocLite.R")
+#source("http://bioconductor.org/biocLite.R")
 
-biocLite( c("pathview", "gage", "gageData"))
+#biocLite( c("pathview", "gage", "gageData"))
 ```
 
 Loading necessary and relevant packages
@@ -183,7 +185,7 @@ head(keggres$less)
  
 Applying labels to the data 
 
-```{r}
+```{r, cache=TRUE}
 lapply(keggres, head)
 ```
 
@@ -207,6 +209,60 @@ pathview(gene.data = foldchanges, pathway.id = "hsa04110")
 Manipulating the above graph
 
 ```{r}
-pathview(gene.data = foldchanges, pathway.id = "hsa04110", kegg.native = FALSE)
+#pathview(gene.data = foldchanges, pathway.id = "hsa04110", kegg.native = FALSE)
 ```
+
+Pulling out the top five upregulated pathways 
+
+```{r}
+keggrespathways <- rownames(keggres$greater) [1:5]
+
+#finding their IDs
+
+keggresids <- substr(keggrespathways, start = 1, stop = 8)
+
+keggresids
+```
+
+Creating plots of the top 5 upregulated pathways 
+
+```{r, warning=FALSE}
+pathview(gene.data = foldchanges, pathway.id = keggresids, species = "hsa")
+```
+
+## Doing Gene Ontology with GAGE
+
+```{r}
+data(go.sets.hs)
+data(go.subs.hs)
+gobpsets <- go.sets.hs[go.subs.hs$BP]
+
+gobpres <- gage(foldchanges, gsets = gobpsets, same.dir = TRUE)
+
+lapply(gobpres, head)
+```
+
+## Reactome Pathway Analysis
+
+Using reactome to analyze over-representation enrichment analysis 
+
+```{r}
+sig_genes <- res[res$padj <= 0.05 & !is.na(res$padj), "symbol"]
+print(paste("Total number of significant genes:", length(sig_genes)))
+```
+
+Making a table
+
+```{r}
+write.table(sig_genes, file = "significant_genes.txt", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+```
+
+
+The plots
+
+```{r}
+
+```
+
 
