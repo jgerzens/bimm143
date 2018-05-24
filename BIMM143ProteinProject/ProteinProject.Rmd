@@ -41,3 +41,8 @@ aln2
 heatmap(aln2, margins = c(10,5))
 ```
 
+```{r}
+alnfin <- consensus(aln)
+alnfin
+```
+
