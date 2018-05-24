@@ -1,0 +1,173 @@
+---
+title: "BIMM 143 Transposon Analysis"
+author: "Jacob Gerzenshtein"
+date: "May 24, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Transposon Analysis 
+
+Installing the relevant packages
+
+```{r}
+#commented out the install of the package so not done every time document is knit
+#install.packages("tidyverse")
+```
+
+Loading relevant package libraries
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(readr)
+```
+
+Loading the experimental file(s) for analysis 
+
+```{r}
+exp_data <- read.csv("Experimental_results.csv")
+
+head(exp_data)
+```
+
+Getting rid of first column X 
+
+```{r}
+exp_data <- select(exp_data, -X)
+head(exp_data)
+```
+
+Select function practice
+
+```{r}
+Mut_str_env <- select(exp_data, Mut_ID, Strain, Environment)
+head(Mut_str_env)
+```
+
+Getting ready for plotting using ggplot2
+
+Have to get the table ready to be x versus y, manipulating the current data to do that 
+
+Just flip the time and frequency into five data points 
+
+The BC ID, Mut ID, Strain, and Environment will have to repeat for each time/frequency point
+
+Using the gather function to do just that 
+
+```{r}
+exp_rearranged <- gather(exp_data, Generation, Frequency, H_0:H_96)
+head(exp_rearranged)
+```
+
+Removing the H_ part from the generation column to make it neater
+
+Will make two columns - the first will have H_ and the second will have the actual timepoint
+
+```{r}
+table_for_graph <- separate(exp_rearranged, Generation, into = c("H", "Time"))
+head(table_for_graph)
+```
+
+Removing the H column completely because it has no effect
+
+```{r}
+table_for_graph <- select(table_for_graph, -H)
+head(table_for_graph)
+```
+
+Removing the NA's from the data
+
+```{r}
+table_cleaned <- na.omit(table_for_graph)
+table_cleaned$Time <- as.numeric(table_cleaned$Time)
+head(table_cleaned)
+```
+
+
+Plotting the data
+
+```{r}
+ggplot(table_cleaned) + geom_line(aes(x = Time, y = Frequency, group = BC_ID), alpha = 0.1, colour = "#000033") + facet_grid(.~Strain) + ggtitle("Barcode Trajectories") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Time, Hours") + ylab("Log10(Barcode Frequency)")
+```
+
+Picking one mutation to see how it behaves in different strains
+
+```{r}
+mut34 <- filter(table_cleaned, table_cleaned$Mut_ID == "34")
+
+mut34
+```
+
+Plotting this data
+
+```{r}
+ggplot(mut34) + geom_line(aes(x = Time, y = Frequency, group = BC_ID), alpha = 0.1, colour = "#000033") + facet_grid(.~Strain) + ggtitle("Barcode Trajectories") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Time, Hours") + ylab("Log10(Barcode Frequency)")
+```
+
+```{r}
+View(table_cleaned)
+```
+
+Filtering out bad data
+
+```{r}
+mut34_f <- filter(mut34, mut34$Frequency > -5)
+```
+
+Plotting again
+
+```{r}
+ggplot(mut34_f) + geom_line(aes(x = Time, y = Frequency, group = BC_ID), alpha = 0.1, colour = "#000033") + facet_grid(.~Strain) + ggtitle("Barcode Trajectories") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Time, Hours") + ylab("Log10(Barcode Frequency)")
+```
+
+Takingfiltered data for mutation 34 and filtering out information about one particular barcode
+
+```{r}
+BC_25361 <- filter(mut34_f, mut34_f$BC_ID == "25361", mut34_f$Strain == "DivAnc")
+
+BC_25361
+```
+
+Plotting
+```{r}
+ggplot(BC_25361) + geom_point(aes(x = Time, y = Frequency, group = BC_ID), alpha = 0.9, colour = "#000033") + facet_grid(.~Strain) + ggtitle("Trajectory") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Time, Hours") + ylab("Log10(Frequency)")
+```
+
+Fitting the line to the plot 
+
+```{r}
+BC_plot <- ggplot(BC_25361) + 
+  aes(x = Time, y = Frequency, group = BC_ID) + 
+  geom_point(alpha = 0.9, colour = "#000033") + 
+  facet_grid(.~Strain) + ggtitle("Trajectory") + 
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  xlab("Time, Hours") + ylab("Log10(Frequency)")
+
+BC_plot_lm <- BC_plot + geom_smooth(se = FALSE, method = "lm")
+
+BC_plot_lm
+```
+
+Regressioon statistics
+
+```{r}
+#goes y to x instead of x to y
+regression_model = lm(Frequency~Time, BC_25361)
+summary_data = summary(regression_model)
+summary_data
+
+Time <- summary_data$coefficients[2]
+
+Time
+
+
+Intercept <- summary_data$coefficients[1]
+
+Intercept
+```
+
