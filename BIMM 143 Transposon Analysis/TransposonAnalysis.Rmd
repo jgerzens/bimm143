@@ -92,7 +92,7 @@ head(table_cleaned)
 Plotting the data
 
 ```{r}
-ggplot(table_cleaned) + geom_line(aes(x = Time, y = Frequency, group = BC_ID), alpha = 0.1, colour = "#000033") + facet_grid(.~Strain) + ggtitle("Barcode Trajectories") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Time, Hours") + ylab("Log10(Barcode Frequency)")
+ggplot(table_cleaned) + geom_line(aes(x = Time, y = Frequency, group = BC_ID), alpha = 0.1, colour = "#000033") + facet_grid(.~Strain) + ggtitle("Barcode Trajectories") + theme(plot.title = element_text(hjust = 0.5)) + xlab("Time (Hours)") + ylab("Log10(Barcode Frequency)")
 ```
 
 Picking one mutation to see how it behaves in different strains
@@ -170,4 +170,5 @@ Intercept <- summary_data$coefficients[1]
 
 Intercept
 ```
+
 
