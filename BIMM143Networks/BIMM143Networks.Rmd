@@ -1,0 +1,303 @@
+---
+title: "BIMM 143 Networks"
+author: "Jacob Gerzenshtein"
+date: "May 29, 2018"
+output: 
+  html_document:
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Network Analysis
+
+Examining metagenomics of oceanic data using Cytoscape and R 
+
+Loading the necessary packages
+
+```{r}
+install.packages( c("igraph", "RColorBrewer"))
+
+source("https://bioconductor.org/biocLite.R")
+
+biocLite("RCy3")
+```
+
+```{r}
+library(RCy3)
+library(igraph)
+library(RColorBrewer)
+```
+
+Verifying the connection to Cytoscape 
+
+```{r}
+cwd <- demoSimpleGraph()
+```
+
+Configuring
+
+```{r}
+layoutNetwork(cwd, 'force-directed')
+
+#Setting a layout 
+
+possible.layout.names <- getLayoutNames(cwd)
+
+layoutNetwork (cwd, possible.layout.names[1])
+
+setVisualStyle(cwd, "Ripple")
+
+#Testing the connection
+
+ping(cwd)
+```
+
+
+Saving image
+
+```{r}
+saveImage(cwd,
+          file.name = "demo",
+          image.type = "png",
+          h = 350)
+```
+
+
+The connection is established, now need to import and read the Data
+
+```{r}
+prok_vir_cor <- read.delim("virus_prok_cor_abundant.tsv", stringsAsFactors = FALSE)
+
+head(prok_vir_cor)
+```
+
+Now using igraph to work with network and Cytoscape 
+
+Converting the co-occurence of dataframe into network that can be sent to Cytoscape 
+
+Creating an undirected network 
+
+```{r}
+g <- graph.data.frame(prok_vir_cor, directed = FALSE)
+
+class (g)
+```
+
+Taking an initial look
+
+```{r}
+plot (g)
+```
+
+Inspecting
+
+```{r}
+V(g)
+
+E(g)
+```
+
+
+Tuning the plot a little
+
+```{r}
+plot(g, vertex.size = 3, vertex.label = NA)
+```
+
+Reading the bacterial data 
+
+```{r}
+phage_id_affiliation <- read.delim("phage_ids_with_affiliation.tsv")
+
+head(phage_id_affiliation)
+
+bac_id_affi <- read.delim("prok_tax_from_silva.tsv")
+
+head(bac_id_affi)
+```
+
+
+Creating the network that Cytoscape can use 
+
+
+
+```{r}
+genenet.nodes <- as.data.frame(vertex.attributes(g))
+
+#Creating empty columns because not all have classifications
+
+genenet.nodes$phage_aff <- rep("not_class", nrow(genenet.nodes))
+genenet.nodes$Tax_order <- rep("not_class", nrow(genenet.nodes))
+genenet.nodes$Tax_subfamily <- rep("not_class", nrow(genenet.nodes))
+
+for (row in seq_along(1:nrow(genenet.nodes))) {
+  if (genenet.nodes$name[row] %in% phage_id_affiliation$first_sheet.Phage_id_network) {
+    id_name <- as.character(genenet.nodes$name[row])
+    aff_to_add <- unique(subset(phage_id_affiliation,
+                         first_sheet.Phage_id_network == id_name,
+                         select = c(phage_affiliation,
+                                    Tax_order,
+                                    Tax_subfamily)))
+    genenet.nodes$phage_aff[row] <- as.character(aff_to_add$phage_affiliation)
+    genenet.nodes$Tax_order[row] <- as.character(aff_to_add$Tax_order)
+    genenet.nodes$Tax_subfamily[row] <- as.character(aff_to_add$Tax_subfamily)
+
+  }
+}
+```
+
+For Prokaryotes
+```{r}
+genenet.nodes$prok_king <- rep("not_class", nrow(genenet.nodes))
+genenet.nodes$prok_tax_phylum <- rep("not_class", nrow(genenet.nodes))
+genenet.nodes$prok_tax_class <- rep("not_class", nrow(genenet.nodes))
+
+for (row in seq_along(1:nrow(genenet.nodes))) {
+  if (genenet.nodes$name[row] %in% bac_id_affi$Accession_ID) {
+    id_name <- as.character(genenet.nodes$name[row])
+    aff_to_add <- unique(subset(bac_id_affi,
+                         Accession_ID == as.character(genenet.nodes$name[row]),
+                         select = c(Kingdom,
+                                    Phylum,
+                                    Class)))
+    genenet.nodes$prok_king[row] <- as.character(aff_to_add$Kingdom)
+    genenet.nodes$prok_tax_phylum[row] <- as.character(aff_to_add$Phylum)
+    genenet.nodes$prok_tax_class[row] <- as.character(aff_to_add$Class)
+
+  }
+}
+```
+
+Adding the relevant network data for connections between organisms, then sending to Cytoscape via cyPlot
+
+```{r}
+genenet.edges <- data.frame(igraph::as_edgelist(g))
+names(genenet.edges) <- c("name.1", "name.2")
+
+genenet.edges$Weight <- igraph::edge_attr(g)[[1]]
+
+genenet.edges$name.1 <- as.character(genenet.edges$name.1)
+genenet.edges$name.2 <- as.character(genenet.edges$name.2)
+genenet.nodes$name <- as.character(genenet.nodes$name)
+
+ug <- cyPlot(genenet.nodes, genenet.edges)
+
+```
+
+Sending the network from R to Cytoscape 
+
+Deleting current windows and establishing the connection
+
+```{r}
+cy <- CytoscapeConnection()
+
+#deleting the current windows
+
+deleteAllWindows(cy)
+```
+
+```{r}
+cw <- CytoscapeWindow("Tara oceans",
+                      graph = ug,
+                      overwriteWindow = TRUE)
+```
+
+```{r}
+displayGraph(cw)
+layoutNetwork(cw)
+fitContent(cw)
+```
+
+Formatting the plot
+
+```{r}
+families_to_colour <- unique(genenet.nodes$prok_tax_phylum)
+families_to_colour <- families_to_colour[!families_to_colour %in% "not_class"]
+node.colour <- RColorBrewer::brewer.pal(length(families_to_colour), "Set3")
+```
+
+Coloring Nodes
+
+```{r}
+setNodeColorRule(cw,
+                 "prok_tax_phylum",
+                 families_to_colour,
+                 node.colour,
+                 "lookup",
+                 default.color = "#ffffff")
+```
+
+```{r}
+displayGraph(cw)
+layoutNetwork(cw)
+fitContent(cw)
+```
+
+Changing shape of node to reflect viral vs prokaryotic 
+
+```{r}
+shapes_for_nodes <- c("DIAMOND")
+
+phage_names <- grep("ph_",
+                    genenet.nodes$name,
+                    value = TRUE)
+
+setNodeShapeRule(cw,
+                 "label",
+                 phage_names,
+                 shapes_for_nodes)
+```
+
+```{r}
+displayGraph(cw)
+
+fitContent(cw)
+```
+
+Colouring by family 
+
+```{r}
+setDefaultNodeBorderWidth(cw, 5)
+
+families_to_colour <- c("Podoviridae",
+                        "Siphoviridae",
+                        "Myoviridae")
+
+node.colour <- RColorBrewer::brewer.pal(length(families_to_colour), "Dark2")
+
+setNodeBorderColorRule(cw,
+                       "Tax_subfamily",
+                       families_to_colour,
+                       node.colour,
+                       "lookup",
+                       default.color = "#000000")
+displayGraph(cw)
+
+fitContent(cw)
+```
+
+Setting up a layout to minimize node overlap
+
+```{r}
+getLayoutNames(cw)
+
+getLayoutPropertyNames(cw, layout.name = "force-directed")
+
+getLayoutPropertyValue(cw, "force-directed", "defaultSpringLength")
+
+getLayoutPropertyValue(cw, "force-directed", "numIterations")
+
+setLayoutProperties(cw,
+                    layout.name = "force-directed",
+                    list(defaultSpringLength = 20,
+                        "numIterations" = 200))
+
+layoutNetwork(cw,
+              layout.name = "force-directed")
+
+fitContent(cw)
+```
+
