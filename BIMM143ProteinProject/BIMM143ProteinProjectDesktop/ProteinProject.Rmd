@@ -1,0 +1,61 @@
+---
+title: "BIMM 143 Protein Project"
+author: "Jacob Gerzenshtein"
+date: "May 29, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Protein Project
+
+```{r}
+par(mai = c(8,8,8,8))
+```
+
+
+```{r}
+library(bio3d)
+
+aln <- read.fasta("Alignv2.fasta")
+
+aln
+
+
+aln2 <- seqidentity(aln)
+
+aln2
+
+heatmap(aln2, margins = c(12,5))
+
+aln3 <- as.data.frame(aln2)
+
+aln3
+
+rowMeans(aln3)
+```
+
+```{r}
+con <- consensus(aln, cutoff = 0.6)
+print(con$seq)
+```
+
+Consensus Sequence:
+
+G D G D C T V M T L P E V R G P L Y V D V P H G P L P Y P P E G L L T P E A S P G K Q P S L - F F S - - R E R E K E R T E I S L L A Q H I S T L A E G F Y L D P L L - K L - P S - I S - - S - S P S L D S - G - - - - - L L G E F Y P L K S W - G L D L P I F P D D D S L F E E S V L E T L L Q D L - S - - - - - - - - S - - S - - S - P S - P - - - - - - - - - - H - - - V S A - - - - - - - S - - S - H - - - - - - - - A - - - - - - - - - - - - - - A - - E - - - E - - - - - S - - - - - - P - - - - - - - - - - - - - - - 
+
+
+```{r}
+
+conv2 <- "GDGDCTVMTLPEVRGPLYVDVPHGPLPFPPEGLLTPEASPGKQPSLPFFS"
+pdbid <- blast.pdb(conv2, database = "swissprot", time.out = NULL, chain.single = TRUE)
+
+pdbid
+```
+
+```{r}
+
+```
+
