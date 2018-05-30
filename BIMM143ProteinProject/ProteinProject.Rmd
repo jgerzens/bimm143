@@ -21,28 +21,14 @@ library(bio3d)
 ```
 
 ```{r}
-aln <- read.fasta("aln-fasta.txt")
-
-aln
-```
-
-
-```{r}
-par(mai = c(8,8,8,8))
-```
-
-
-
-```{r}
-aln2 <- seqidentity(aln)
-
-aln2
-
-heatmap(aln2, margins = c(10,5))
+con <- "GDGDCTVMTLPEVRGPLYVDVPHGPLPFPPEGLLTPEASPGKQPSLPFFS"
+pdbid <- blast.pdb(con, database = "pdb", time.out = NULL, chain.single = TRUE)
+pdbid
 ```
 
 ```{r}
-alnfin <- consensus(aln)
-alnfin
+ids <- c("5MQF_G", "3KBY_A", "1GXR_A")
+pdb.annotate(ids, anno.terms = NULL)
 ```
+
 
