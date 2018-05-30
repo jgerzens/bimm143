@@ -22,12 +22,12 @@ library(bio3d)
 
 ```{r}
 con <- "GDGDCTVMTLPEVRGPLYVDVPHGPLPFPPEGLLTPEASPGKQPSLPFFS"
-pdbid <- blast.pdb(con, database = "pdb", time.out = NULL, chain.single = TRUE)
+pdbid <- blast.pdb(con, database = "swissprot", time.out = NULL, chain.single = TRUE)
 pdbid
 ```
 
 ```{r}
-ids <- c("5MQF_G", "3KBY_A", "1GXR_A")
+ids <- c("3ZK1", "3JBN", "4UOR")
 pdb.annotate(ids, anno.terms = NULL)
 ```
 
