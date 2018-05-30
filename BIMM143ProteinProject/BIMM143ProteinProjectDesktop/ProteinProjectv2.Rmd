@@ -55,7 +55,4 @@ pdbid <- blast.pdb(conv2, database = "swissprot", time.out = NULL, chain.single 
 pdbid
 ```
 
-```{r}
-
-```
 
