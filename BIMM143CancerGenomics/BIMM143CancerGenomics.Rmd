@@ -1,0 +1,128 @@
+---
+title: "BIMM 143 Cancer Genomics"
+author: "Jacob Gerzenshtein"
+date: "May 31, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Cancer Genomics 
+
+Part 1:
+
+1: 4008 cases so far mutated by P53
+
+2: R175H, R273C, R248Q, R273H, R248W, R282W
+
+3: Mostly DNA Binding Domain
+
+4: Lung, Ovary, Head/Neck, Brain, Breast, Colorectal 
+
+5: G12D (208 cases)
+
+6: Somewhat, 4th most common
+
+7: TCGA - UCEC
+
+8: TP53 40.38%
+
+9: 177 cases of 185 have RNA-Seq Available 
+
+## Moving to R
+
+Loading packages
+
+```{r}
+source("https://bioconductor.org/biocLite.R")
+
+biocLite(c("GenomicDataCommons", "maftools"))
+```
+
+```{r}
+library(GenomicDataCommons)
+library(maftools)
+```
+
+```{r}
+GenomicDataCommons::status()
+```
+
+Loading GDC Data
+
+```{r}
+cases_by_project <- cases() %>%
+  facet("project.project_id") %>%
+  aggregations()
+head(cases_by_project)
+```
+
+
+```{r}
+#View(cases_by_project$project.project_id)
+
+par(mar = c(8,4,2,2))
+
+cases <- cases_by_project$project.project_id
+
+target <- cases_by_project$project.project_id == "TCGA-PAAD"
+
+coltarget <- which(target)
+
+
+#mycols <- rep("lightblue", nrow(cases_by_project$project.project_id))
+#ind <- which(cases_by_project$project.project_id[ ,1] == "TCGA-PAAD")
+#mycols[ind] = "red"
+
+coltarget= "red"
+
+plot <- barplot(names.arg = cases_by_project$project.project_id$key,
+                col = mycols,
+                log = "y", 
+                las = 2,
+                height = cases_by_project$project.project_id$doc_count)
+```
+
+```{r}
+
+library(rjson)
+
+library(XML)
+
+
+file_records <- files() %>%
+  filter(~ cases.project.project_id == "TCGA-PAAD" &
+    data_type == "Gene Expression Quantification" &
+    analysis.workflow_type == "HTSeq - Counts") %>%
+ 
+  response_all()
+```
+
+
+## Part 2
+
+```{r}
+library(bio3d)
+
+seqdata <- read.fasta("lecture18_sequences.fa")
+
+View(seqdata)
+```
+
+Mutant and Wild Type Sequences
+
+  1. Alignment function
+  
+  2. Conserv function
+  
+  3. Get a vector
+  
+  4. Run score < 1 function on vector, returns logicals 
+  
+  5. If any part of the vector returns a value not 1, there is a difference in the sequences
+  
+  6. Use which function to detect the T or F positions 
+  
+  7. Which will return the vector position of the T or F
