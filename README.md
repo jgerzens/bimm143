@@ -2,7 +2,7 @@
 
 For BIMM 143
 
-This is my workd from Bioinformatics class from UC San Diego, Spring 2018
+This is my work from Bioinformatics class from UC San Diego, Spring 2018
 
 [Differential Expression](https://github.com/jgerzens/bimm143/blob/master/BIMM%20143%20Differential%20Expression/DifferentialExpression.Rmd)
 
