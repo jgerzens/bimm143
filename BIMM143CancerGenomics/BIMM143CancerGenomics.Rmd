@@ -53,6 +53,10 @@ GenomicDataCommons::status()
 Loading GDC Data
 
 ```{r}
+
+library(magrittr)
+
+
 cases_by_project <- cases() %>%
   facet("project.project_id") %>%
   aggregations()
@@ -90,6 +94,8 @@ plot <- barplot(names.arg = cases_by_project$project.project_id$key,
 library(rjson)
 
 library(XML)
+
+library(magrittr)
 
 
 file_records <- files() %>%
