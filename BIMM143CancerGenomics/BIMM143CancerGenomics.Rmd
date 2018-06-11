@@ -132,3 +132,5 @@ Mutant and Wild Type Sequences
   6. Use which function to detect the T or F positions 
   
   7. Which will return the vector position of the T or F
+  
+Test code
